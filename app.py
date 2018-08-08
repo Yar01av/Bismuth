@@ -9,7 +9,6 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 base_path = os.path.abspath(os.path.dirname(__file__))
 
 def get_text_from_lines(preceeding_text, text_file_lines):
-	print(text_file_lines)
 	lines_with_extras = list(filter(lambda line: preceeding_text in line, text_file_lines))
 
 	return [text_line[len(preceeding_text) : ] for text_line in lines_with_extras]
@@ -29,16 +28,19 @@ def show_all():
 def new_post():
 	if request.method == "POST":
 		with open(os.path.join(base_path, "static", "post_log.txt"), "a") as log:
-			f = request.files["new-post-image"]
-
 			#Make a note of the post
 			log.write("New post made on %s. \n" % datetime.now().strftime("%Y-%m-%d %H:%M"))
 			log.write("Heading: " + request.form["new-post-title"] + "\n")
 			log.write("Content: " + request.form["new-post-text"].replace("\r\n", " ").replace("\n", " ") + "\n")
-			log.write("Image name: " + secure_filename(f.filename) + "\n")
 
-			#Save the image
-			f.save(app.config['UPLOAD_FOLDER'] + '/' + secure_filename(f.filename))
+			if bool(request.files) == True:
+				f = request.files["new-post-image"]
+				log.write("Image name: " + secure_filename(f.filename) + "\n")
+
+				#Save the image
+				f.save(app.config['UPLOAD_FOLDER'] + '/' + secure_filename(f.filename))
+			else:
+				log.write("Image name: fig1.png" + "\n")
 
 			return "The post was successfully posted!"
 	else:
