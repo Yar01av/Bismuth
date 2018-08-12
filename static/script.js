@@ -3,7 +3,7 @@ function flush_new_post_ui() {
 	$("#curtain").remove();
 	$(".post").remove();
 
-	updatePostList();
+	updatePostList(chosen_category);
 }
 
 function addPostButtonEvent() {
@@ -21,16 +21,42 @@ function addPostButtonEvent() {
 								 \
 							</div> \
 							<div class='form-group'> \
+								<label>Choose the category of the post</label> \
+								<div class='form-check'> \
+									<input class='form-check-input' type='radio' name='category-choice' id='radio-uncategorized' value='uncategorized' checked> \
+	  								<label class='form-check-label' for='radio-uncategorized'> \
+	    								Uncategorized/All \
+	  								</label> \
+								</div> \
+								<div class='form-check'> \
+									<input class='form-check-input' type='radio' name='category-choice' id='radio-science' value='science'> \
+	  								<label class='form-check-label' for='radio-science'> \
+	    								Science \
+	  								</label> \
+								</div> \
+								<div class='form-check'> \
+									<input class='form-check-input' type='radio' name='radio-culture' value='culture'> \
+	  								<label class='form-check-label' for='radio-culture'> \
+	    								Culture \
+	  								</label> \
+								</div> \
+								<div class='form-check'> \
+									<input class='form-check-input' type='radio' name='category-choice' value='history'> \
+	  								<label class='form-check-label' for='exampleRadios2'> \
+	    								History \
+	  								</label> \
+								</div> \
+							</div> \
+							<div class='form-group'> \
 								<label>Choose an image to upload</label> \
 								<input id='upload-button' type=file class='form-control-file' name=new-post-image></input> \
-								 \
 							</div> \
 							<input type='submit' class='btn secondary-bg-clr' rows=3 value='Submit a new post'></input> \
 							<button type='button' class='btn secondary-bg-clr' onclick=flush_new_post_ui() rows=4>Cancel</button> \
 						</form> \
 					");
 
-	//Assocuated events
+	//Associated events
 	$("#post-form").submit(function(event){
 		//prevents refreshing
 		event.preventDefault();
@@ -64,9 +90,9 @@ function addPostButtonEvent() {
 }
 
 //updates the list of posts
-function updatePostList() {
+function updatePostList(category) {
 	$.ajax({
-			url: postEndpoint,
+			url: getPostsEndpoint,
 			method: "GET",
 			async: false,
 			success: function(respData, status, jqXHR) {
@@ -83,6 +109,26 @@ function updatePostList() {
 		})
 }
 
-
-//Start by updating the list of posts
-$(document).ready(updatePostList);
+//selecting the right category visually in the navbar
+$(document).ready(function(){
+	switch(chosen_category){
+		case "uncategorized":
+			$("#nav-all").html('All<span class="sr-only">(current)</span>');
+			$("#nav-all").addClass("active");
+			break;
+		case "science":
+			$("#nav-science").html('Science<span class="sr-only">(current)</span>');
+			$("#nav-science").addClass("active");
+			break;
+		case "culture":
+			$("#nav-culture").html('Culture<span class="sr-only">(current)</span>');
+			$("#nav-culture").addClass("active");
+			break;
+		case "history":
+			$("#nav-history").html('History<span class="sr-only">(current)</span>');
+			$("#nav-history").addClass("active");
+			break;
+	}
+});
+//updating the list of posts
+$(document).ready(updatePostList(chosen_category));
