@@ -68,9 +68,13 @@
 }
 .post{
 	background-color: #fafafa;
+	word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 .navbar-brand{
 	font-size: 35px;
+	overflow: hidden;
 }
 .navbar-text{
 	opacity: 0.5;
@@ -78,9 +82,13 @@
 .form-control-file{
 	width: 200px;
 }
+.image-container{
+	width: 30%;
+	max-width: 150px
+}
 img{
-	height: 150px;
-	width: 300px;
+	height: 100%;
+	width: 100%;
 }
 label{
 	display: block;

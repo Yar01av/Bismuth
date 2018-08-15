@@ -9,8 +9,8 @@
 </head>
 <body>
 	<nav class="navbar sticky-top navbar-dark shadow primary-bg-clr" id="navig-bar">
-		<a class="navbar-brand" href="#">
-			<strong>Bismuth</strong> v0.2	
+		<a class="navbar-brand" href="/">
+			<strong>Bismuth</strong> v0.3	
 		</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     		<span class="navbar-toggler-icon"></span>
@@ -46,9 +46,6 @@
 		const postEndpoint = "{{ url_for('.new_post') }}";
     const chosen_category = "{{ category }}"
     const getPostsEndpoint = "{{ url_for('.get_posts', category = category) }}"
-
-    console.log(getPostsEndpoint)
-    console.log(chosen_category)
 	</script>
 	<script type = "text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

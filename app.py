@@ -7,8 +7,11 @@ import os
 
 UPLOAD_FOLDER = "./images"
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-base_path = os.path.abspath(os.path.dirname(__file__))
-list_of_categories = ["uncategorized", "science", "history", "culture", ""]
+BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+LIST_OF_CATEGORIES = ["uncategorized", "science", "history", "culture", ""]
+MAX_HEADING_LENGTH = 80
+MAX_CONTENT_LENGTH = 200
+MAX_POSTS = 5
 
 def get_text_from_lines(preceeding_text, text_file_lines):
 	lines_with_extras = list(filter(lambda line: preceeding_text in line, text_file_lines))
@@ -25,37 +28,48 @@ db = SQLAlchemy(app)
 class Post(db.Model):
 	id_num = db.Column(db.Integer, primary_key = True, index = True, autoincrement = True)
 	time = db.Column(db.DateTime)
-	heading = db.Column(db.String(80))
-	content = db.Column(db.String(120))
+	heading = db.Column(db.String(MAX_HEADING_LENGTH))
+	content = db.Column(db.String(MAX_CONTENT_LENGTH))
 	category = db.Column(db.String(50))
 	image_name = db.Column(db.String(80))
-
-	def __init__(self, heading, content, category, image_name):
-		self.time = datetime.now()
-		self.heading = heading
-		self.content = content
-		self.category = category
-		self.image_name = image_name
 
 @app.route('/')
 @app.route('/<category>')
 def show_all(category = "uncategorized"):
-	if category not in list_of_categories:
+	if category not in LIST_OF_CATEGORIES:
 		print(category)
 		abort(404)
 	return render_template('main.html', category = category)
 
 @app.route('/new-post/', methods = ['POST'])
 def new_post():
+	bad_inputs_ids = []
+
+	#Test the form input
 	if bool(request.files) == True:
+		if secure_filename(request.files["new-post-image"].filename).rsplit('.', 1)[1] not in ALLOWED_EXTENSIONS:
+			bad_inputs_ids.append("#upload-button")
+
 		f = request.files["new-post-image"]
 		image_name = secure_filename(f.filename)
 		f.save(app.config['UPLOAD_FOLDER'] + '/' + image_name)
 	else:
 		image_name = "default.png"
 
+	if len(request.form["new-post-title"]) > MAX_HEADING_LENGTH:
+		bad_inputs_ids.append("#title-field")
+	if len(request.form["new-post-text"]) > MAX_CONTENT_LENGTH:
+		bad_inputs_ids.append("#content-field")
+
+	if len(bad_inputs_ids) != 0:
+		return jsonify(bad_inputs_ids), 400
+
 	#Write to SQL database
-	db.session.add(Post(request.form["new-post-title"], request.form["new-post-text"].replace("\r\n", " ").replace("\n", " "), request.form["category-choice"], image_name))
+	db.session.add(Post(heading = request.form["new-post-title"], content = request.form["new-post-text"].replace("\r\n", " ").replace("\n", " "), category = request.form["category-choice"], image_name = image_name, time = datetime.now()))
+	#Delete the oldest entry if there are too many
+	all_saved_posts = Post.query.all()
+	if len(all_saved_posts) > MAX_POSTS:
+		db.session.delete(all_saved_posts[0])
 	db.session.commit()
 
 	return "The post was successfully posted!"
@@ -68,12 +82,21 @@ def get_posts(category = "uncategorized"):
 	imgs = []
 
 	#Read from SQL database
-	for p in Post.query.filter_by(category = category).all():
+	if category in LIST_OF_CATEGORIES:
+		if category == "uncategorized":
+			fetched_posts = Post.query.all()
+		else:
+			fetched_posts = Post.query.filter_by(category = category).all()
+	else:
+		abort(400)
+
+	for p in fetched_posts:
 		headings.append(p.heading)
 		contents.append(p.content)
 		imgs.append(p.image_name)
 
-	return jsonify(dict(headings = headings, contents = contents, img_name = imgs))
+	#return and reverse so that the recent posts are on top
+	return jsonify(dict(headings = list(reversed(headings)), contents = list(reversed(contents)), img_name = list(reversed(imgs))))
 
 @app.route("/images/<path:image_name>", methods = ["GET"])
 def image_fetch(image_name):

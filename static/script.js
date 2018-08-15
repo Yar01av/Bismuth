@@ -1,3 +1,6 @@
+const max_heading_length = 80
+const max_content_length = 200
+
 function flush_new_post_ui() {
 	$("#post-form").remove();
 	$("#curtain").remove();
@@ -12,12 +15,17 @@ function addPostButtonEvent() {
 						<form id='post-form' method=POST enctype='multipart/form-data'> \
 							<div class='form-group'> \
 								<label>Title of the new post</label> \
-								<input id='title-field' class='form-control' name='new-post-title'></input> \
-								 \
+								<input id='title-field' class='form-control' name='new-post-title' placeholder='" + max_heading_length + " symbols max.'></input> \
+								<div class='invalid-feedback'> \
+          							The number of symbols should be no more than " + max_heading_length + ".\
+        						</div> \
 							</div> \
 							<div class='form-group'> \
 								<label>Text of the new post</label> \
-								<textarea class='form-control' name='new-post-text'></textarea> \
+								<textarea id='content-field' class='form-control' name='new-post-text' placeholder='" + max_content_length + " symbols max.'></textarea> \
+								<div class='invalid-feedback'> \
+          							The number of symbols should be no more than " + max_content_length + ".\
+        						</div> \
 								 \
 							</div> \
 							<div class='form-group'> \
@@ -50,6 +58,9 @@ function addPostButtonEvent() {
 							<div class='form-group'> \
 								<label>Choose an image to upload</label> \
 								<input id='upload-button' type=file class='form-control-file' name=new-post-image></input> \
+								<div class='invalid-feedback'> \
+          							Incorrect file type. Only .jpeg, .jpg, .png, .gif are accepted.\
+        						</div> \
 							</div> \
 							<input type='submit' class='btn secondary-bg-clr' rows=3 value='Submit a new post'></input> \
 							<button type='button' class='btn secondary-bg-clr' onclick=flush_new_post_ui() rows=4>Cancel</button> \
@@ -73,12 +84,18 @@ function addPostButtonEvent() {
             processData: false,
             async: false,
 			success: function(respData, status, jqXHR) {
-				console.log(respData);
+
+				//restores the normal page and updates it
+				flush_new_post_ui();
+			},
+			error: function(jqXHR, textStatus) {
+				//jqXHR contains ids of the icorrect fields
+				for (var i = 0; i < jqXHR["responseJSON"].length; i++) {
+					console.log(jqXHR["responseJSON"][i]);
+					$(String(jqXHR["responseJSON"][i])).addClass("is-invalid");
+				}
 			}
 		});
-
-		//restores the normal page and updates it
-		flush_new_post_ui();
 	});
 	$("#curtain").click(flush_new_post_ui);
 	$("#title-field").keydown(function(event){
@@ -98,7 +115,9 @@ function updatePostList(category) {
 			success: function(respData, status, jqXHR) {
 				for(var i = 0; i < respData["contents"].length; i++) {
 					$("body").append('<div class="border media mb-2 shadow-sm post"> \
-	  									<img class="mr-3" src="./images/' + respData["img_name"][i] + '"> \
+										<div class="mr-3 align-self-center image-container"> \
+	  									<img src="./images/' + respData["img_name"][i] + '"> \
+	  									</div> \
 	  									<div class="media-body"> \
 	    									<h5 class="mt-0">' + respData["headings"][i] + '</h5> \
 	    										' + respData["contents"][i] + ' \
