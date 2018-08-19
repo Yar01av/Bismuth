@@ -66,6 +66,13 @@
 	background-color: #7200ca;
 	transition: 0.3s;
 }
+.link-color{
+	color: #7200ca;
+}
+.link-color:hover{
+	color: #7200ca;
+	transition: 0.3s;
+}
 .post{
 	background-color: #fafafa;
 	word-wrap: break-word;
@@ -93,7 +100,7 @@ img{
 	margin-left: auto;
 	display: block;
 	width: auto;
-	
+
 }
 label{
 	display: block;

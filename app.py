@@ -34,7 +34,7 @@ class Post(db.Model):
 	image_name = db.Column(db.String(80))
 
 @app.route('/')
-@app.route('/<category>')
+@app.route('/category/<category>')
 def show_all(category = "uncategorized"):
 	if category not in LIST_OF_CATEGORIES:
 		print(category)
@@ -101,6 +101,10 @@ def get_posts(category = "uncategorized"):
 @app.route("/images/<path:image_name>", methods = ["GET"])
 def image_fetch(image_name):
 	return send_from_directory(app.config['UPLOAD_FOLDER'], image_name)
+
+@app.route("/about/")
+def about():
+	return render_template("about_info.html")
 
 if __name__ == "__main__":
 	app.run(host="localhost", port="5000", debug=True)
