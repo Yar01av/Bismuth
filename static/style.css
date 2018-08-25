@@ -1,16 +1,10 @@
 #make-post{
-	color: white;
 	position: fixed;
 	bottom: 30px;
 	right: 30px;
 	width: 70px;
     height: 70px;
-    border-radius: 90%;
     font-size: 30px;
-    line-height: 1.33;
-    vertical-align: middle;
-    text-align: center;
-    padding: 7px 12px 7px 12px;
     transition: 0.3s;
     font-weight: bold;
 }
@@ -66,6 +60,17 @@
 	background-color: #7200ca;
 	transition: 0.3s;
 }
+.dangerous-bg-clr{
+	background-color: #f44336;
+}
+.dangerous-bg-clr:hover{
+	background-color: #d50000;
+	transition: 0.3s;
+}
+.dangerous-bg-clr:active{
+	background-color: #d50000;
+	transition: 0.3s;
+}
 .link-color{
 	color: #7200ca;
 }
@@ -92,6 +97,9 @@
 .image-container{
 	width: 30%;
 	max-width: 150px
+}
+.btn{
+	color: white;
 }
 img{
 	max-height: 300px;

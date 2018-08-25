@@ -1,12 +1,33 @@
 const max_heading_length = 80
 const max_content_length = 200
 
-function flush_new_post_ui() {
+function flashNewPostUI() {
 	$("#post-form").remove();
 	$("#curtain").remove();
 	$(".post").remove();
 
 	updatePostList(chosen_category);
+}
+
+function maybeAddDeleteButton(post_id, ids_with_deletion) {
+	if (ids_with_deletion.includes(post_id)) {
+		return "<button onclick=requestDeletion(" + post_id + ") class='btn dangerous-bg-clr'> Delete this post </button>"
+	} else {
+		return ""
+	}
+}
+
+function requestDeletion(post_id) {
+	$.ajax({
+		url: "/delete_post/" + post_id,
+		method: "DELETE",
+		success: function(respData, status, jqXHR) {
+			$("#post-id_" + post_id).remove()
+		},
+		error: function(jqXHR, textStatus) {
+			alert("You are trying to delete a post that you have not made!")
+		}
+	});
 }
 
 function addPostButtonEvent() {
@@ -63,7 +84,7 @@ function addPostButtonEvent() {
         						</div> \
 							</div> \
 							<input type='submit' class='btn secondary-bg-clr' rows=3 value='Submit a new post'></input> \
-							<button type='button' class='btn secondary-bg-clr' onclick=flush_new_post_ui() rows=4>Cancel</button> \
+							<button type='button' class='btn secondary-bg-clr' onclick=flashNewPostUI() rows=4>Cancel</button> \
 						</form> \
 					");
 
@@ -85,19 +106,18 @@ function addPostButtonEvent() {
             async: false,
 			success: function(respData, status, jqXHR) {
 
-				//restores the normal page and updates it
-				flush_new_post_ui();
+				//restores the normal page and updates it (+ delete buttons)
+				flashNewPostUI();
 			},
 			error: function(jqXHR, textStatus) {
 				//jqXHR contains ids of the icorrect fields
 				for (var i = 0; i < jqXHR["responseJSON"].length; i++) {
-					console.log(jqXHR["responseJSON"][i]);
 					$(String(jqXHR["responseJSON"][i])).addClass("is-invalid");
 				}
 			}
 		});
 	});
-	$("#curtain").click(flush_new_post_ui);
+	$("#curtain").click(flashNewPostUI);
 	$("#title-field").keydown(function(event){
 	if (event.keyCode==13) {
 		event.preventDefault();
@@ -114,18 +134,25 @@ function updatePostList(category) {
 			async: false,
 			success: function(respData, status, jqXHR) {
 				for(var i = 0; i < respData["contents"].length; i++) {
-					$("body").append('<div class="border media mb-2 shadow-sm post"> \
+					$("body").append('<div id="post-id_' + respData["ids"][i] + '" class="border media mb-2 shadow-sm post"> \
 										<div class="mr-3 align-self-center image-container"> \
-	  									<img src="./images/' + respData["img_name"][i] + '"> \
+	  									<img src="/images/' + respData["img_name"][i] + '"> \
 	  									</div> \
 	  									<div class="media-body"> \
 	    									<h5 class="mt-0">' + respData["headings"][i] + '</h5> \
 	    										' + respData["contents"][i] + ' \
 	  									</div>\
+	  									' + maybeAddDeleteButton(respData["ids"][i], respData["client_made_posts"]) + '\
 									</div>')
-				}
+				};
 			}
 		})
+
+	
+	//Add deletion buttons
+	//for (var i = 0; i < document.cookie; i--) {
+	//	Things[i]
+	//}
 }
 
 //selecting the right category visually in the navbar
