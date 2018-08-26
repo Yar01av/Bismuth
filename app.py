@@ -5,18 +5,21 @@ from werkzeug import secure_filename
 import os
 
 
-UPLOAD_FOLDER = "./images"
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_PATH, "images")
 LIST_OF_CATEGORIES = ["uncategorized", "science", "history", "culture", ""]
 MAX_HEADING_LENGTH = 80
 MAX_CONTENT_LENGTH = 200
-MAX_POSTS = 5
+MAX_POSTS = 142
+MAX_FILE_SIZE = 0.5 * 1024 * 1024
 
-def get_text_from_lines(preceeding_text, text_file_lines):
-	lines_with_extras = list(filter(lambda line: preceeding_text in line, text_file_lines))
+def init_cookie():
+	global session
 
-	return [text_line[len(preceeding_text) : ] for text_line in lines_with_extras]
+	if session.get("ids_of_posts") == None:
+		print("Nada")
+		session["ids_of_posts"] = []
 
 
 app = Flask(__name__)
@@ -34,31 +37,35 @@ class Post(db.Model):
 	category = db.Column(db.String(50))
 	image_name = db.Column(db.String(80))
 
+#Cookies should be permanent
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+
 @app.route('/')
 @app.route('/category/<category>')
 def show_all(category = "uncategorized"):
 	if category not in LIST_OF_CATEGORIES:
-		print(category)
 		abort(404)
-
-
-	print(request.remote_addr)
-
 
 	return render_template('main.html', category = category)
 
-@app.route('/new-post/', methods = ['POST'])
+@app.route('/new-post', methods = ['POST'])
 def new_post():
 	bad_inputs_ids = []
 
-	#Test the form input
+	#Test the form input and append ids of the faulty elements
 	if bool(request.files) == True:
 		if secure_filename(request.files["new-post-image"].filename).rsplit('.', 1)[1] not in ALLOWED_EXTENSIONS:
 			bad_inputs_ids.append("#upload-button")
 
 		f = request.files["new-post-image"]
 		image_name = secure_filename(f.filename)
-		f.save(app.config['UPLOAD_FOLDER'] + '/' + image_name)
+		f.save(os.path.join(app.config['UPLOAD_FOLDER'], image_name))
+
+		#Test file size
+		if os.stat(os.path.join(app.config['UPLOAD_FOLDER'], image_name)).st_size > MAX_FILE_SIZE:
+			bad_inputs_ids.append("#upload-button")
 	else:
 		image_name = "default.png"
 
@@ -74,21 +81,12 @@ def new_post():
 	new_post_entry = Post(heading = request.form["new-post-title"], content = request.form["new-post-text"].replace("\r\n", " ").replace("\n", " "), category = request.form["category-choice"], image_name = image_name, time = datetime.now())
 	db.session.add(new_post_entry)
 
-	if session.get("ids_of_posts") == None:
-		print("Nada")
-		session["ids_of_posts"] = []
+	init_cookie()
 
 	db.session.flush()
 	db.session.refresh(new_post_entry)
 	#Append does not work for some reason
 	session["ids_of_posts"] = session["ids_of_posts"][:] + [new_post_entry.id_num]
-
-
-	print(new_post_entry.id_num)
-	print(session["ids_of_posts"])
-
-
-
 
 	#Delete the oldest entry if there are too many
 	all_saved_posts = Post.query.all()
@@ -107,6 +105,8 @@ def new_post():
 @app.route('/get_posts/', methods = ["GET"])
 @app.route('/get_posts/<category>', methods = ["GET"])
 def get_posts(category = "uncategorized"):
+	init_cookie()
+
 	headings = []
 	contents = []
 	imgs = []
@@ -144,10 +144,29 @@ def about():
 
 @app.route("/delete_post/<int:post_id>", methods = ["DELETE"])
 def delete_post(post_id):
-	db.session.delete(Post.query.filter_by(id_num = post_id).first())
-	db.session.commit()
-	
-	return "200"
+	if post_id in session["ids_of_posts"]:
+		post_to_delete = Post.query.filter_by(id_num = post_id).first()
+		#First, delete the image
+		os.remove(os.path.join(app.config['UPLOAD_FOLDER'], post_to_delete.image_name))
+
+		db.session.delete(post_to_delete)
+		db.session.commit()
+
+		return "Deleted"
+	else:
+		abort(400)
+
+@app.route("/accept_cookies", methods = ["GET", "POST"])
+def accept_cookies():
+	#configure the cookie
+	if session.get("accept_cookies") == None:
+		session["accept_cookies"] = False
+
+	if request.method == "POST":
+		session["accept_cookies"] = True
+		return "200"
+	else:
+		return jsonify(session["accept_cookies"])
 
 if __name__ == "__main__":
 	app.run(host="localhost", port="5000", debug=True)

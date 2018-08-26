@@ -57,5 +57,9 @@
 	<script type = "text/javascript" src="{{ url_for('static', filename='script_main.js') }}"></script>
   {% endblock %}
 
+  <script type="text/javascript">
+    const acceptCookiesEndpoint = "{{ url_for('.accept_cookies') }}"
+  </script>
+  <script type="text/javascript" src="{{ url_for('static', filename='script_cookie_acceptance.js') }}"></script>
 </body>
 </html>

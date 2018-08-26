@@ -1,9 +1,13 @@
 const max_heading_length = 80
 const max_content_length = 200
 
-function flashNewPostUI() {
-	$("#post-form").remove();
+function removeSpecialOverlay() {
+	$(".over-curtain-card").remove();
 	$("#curtain").remove();
+}
+
+function flushNewPostUI() {
+	removeSpecialOverlay();
 	$(".post").remove();
 
 	updatePostList(chosen_category);
@@ -33,7 +37,7 @@ function requestDeletion(post_id) {
 function addPostButtonEvent() {
 	$("body").append("<div id='curtain'></div>");
 	$("body").append(" \
-						<form id='post-form' method=POST enctype='multipart/form-data'> \
+						<form id='post-form' class='over-curtain-card' method=POST enctype='multipart/form-data'> \
 							<div class='form-group'> \
 								<label>Title of the new post</label> \
 								<input id='title-field' class='form-control' name='new-post-title' placeholder='" + max_heading_length + " symbols max.'></input> \
@@ -80,11 +84,11 @@ function addPostButtonEvent() {
 								<label>Choose an image to upload</label> \
 								<input id='upload-button' type=file class='form-control-file' name=new-post-image></input> \
 								<div class='invalid-feedback'> \
-          							Incorrect file type. Only .jpeg, .jpg, .png, .gif are accepted.\
+          							Incorrect file type or the image is too large. Only .jpeg, .jpg, .png, .gif that are below 10MB are accepted.\
         						</div> \
 							</div> \
-							<input type='submit' class='btn secondary-bg-clr' rows=3 value='Submit a new post'></input> \
-							<button type='button' class='btn secondary-bg-clr' onclick=flashNewPostUI() rows=4>Cancel</button> \
+							<input type='submit' class='btn post-control-btn secondary-bg-clr mb-1' rows=3 value='Submit a new post'></input> \
+							<button type='button' class='btn post-control-btn secondary-bg-clr' onclick=flushNewPostUI() rows=4>Cancel</button> \
 						</form> \
 					");
 
@@ -107,7 +111,7 @@ function addPostButtonEvent() {
 			success: function(respData, status, jqXHR) {
 
 				//restores the normal page and updates it (+ delete buttons)
-				flashNewPostUI();
+				flushNewPostUI();
 			},
 			error: function(jqXHR, textStatus) {
 				//jqXHR contains ids of the icorrect fields
@@ -117,7 +121,7 @@ function addPostButtonEvent() {
 			}
 		});
 	});
-	$("#curtain").click(flashNewPostUI);
+	$("#curtain").click(flushNewPostUI);
 	$("#title-field").keydown(function(event){
 	if (event.keyCode==13) {
 		event.preventDefault();
@@ -147,12 +151,6 @@ function updatePostList(category) {
 				};
 			}
 		})
-
-	
-	//Add deletion buttons
-	//for (var i = 0; i < document.cookie; i--) {
-	//	Things[i]
-	//}
 }
 
 //selecting the right category visually in the navbar
