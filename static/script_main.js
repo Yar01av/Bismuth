@@ -87,7 +87,7 @@ function addPostButtonEvent() {
           							Incorrect file type or the image is too large. Only .jpeg, .jpg, .png, .gif that are below 10MB are accepted.\
         						</div> \
 							</div> \
-							<input type='submit' class='btn post-control-btn secondary-bg-clr mb-1' rows=3 value='Submit a new post'></input> \
+							<input type='submit' class='btn post-control-btn secondary-bg-clr' rows=3 value='Submit a new post'></input> \
 							<button type='button' class='btn post-control-btn secondary-bg-clr' onclick=flushNewPostUI() rows=4>Cancel</button> \
 						</form> \
 					");
