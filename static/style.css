@@ -1,124 +1,146 @@
-#make-post{
-	position: fixed;
-	bottom: 30px;
-	right: 30px;
-	width: 70px;
-    height: 70px;
-    font-size: 30px;
-    transition: 0.3s;
-    font-weight: bold;
+#make-post {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 70px;
+  height: 70px;
+  font-size: 30px;
+  transition: 0.3s;
+  font-weight: bold;
 }
-#accept-cookie-btn{
-	width: 100%;
-}
-#curtain{
-	background-color: black;
-	opacity: 0.5;
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	z-index: 5000;
-	top: 0px;
-	left: 0px;
-}
-#form-wrapper{
-	width: 100%;
-	display: block;
-}
-#title-field{
-	width: 100%;
-	border-color: rgb(169, 169, 169);
-}
-#upload-button{
-	color: black;
-}
-.over-curtain-card{
-	background-color: white;
 
-	z-index: 5001;	
-	width: auto;
-	height: auto;
-	border-radius: 4px;
-	vertical-align: middle;
-	padding: 10px;
-	display: block;
-	text-align: left;
-	position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+#accept-cookie-btn {
+  width: 100%;
+}
 
+#curtain {
+  background-color: black;
+  opacity: 0.5;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 5000;
+  top: 0px;
+  left: 0px;
 }
-.primary-bg-clr{
-	background-color: #4fc3f7;
-}
-.secondary-bg-clr{
-	background-color: #aa00ff;
-}
-.secondary-bg-clr:hover{
-	background-color: #7200ca;
-	transition: 0.3s;
-}
-.secondary-bg-clr:active{
-	background-color: #7200ca;
-	transition: 0.3s;
-}
-.dangerous-bg-clr{
-	background-color: #f44336;
-}
-.dangerous-bg-clr:hover{
-	background-color: #d50000;
-	transition: 0.3s;
-}
-.dangerous-bg-clr:active{
-	background-color: #d50000;
-	transition: 0.3s;
-}
-.link-color{
-	color: #7200ca;
-}
-.link-color:hover{
-	color: #7200ca;
-	transition: 0.3s;
-}
-.post{
-	background-color: #fafafa;
-	word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-all;
-}
-.navbar-brand{
-	font-size: 35px;
-	overflow: hidden;
-}
-.navbar-text{
-	opacity: 0.5;
-}
-.form-control-file{
-	width: 200px;
-}
-.image-container{
-	width: 30%;
-	max-width: 150px
-}
-.btn{
-	color: white;
-}
-.post-control-btn{
-	width: 100%;
-}
-img{
-	max-height: 300px;
-	max-width: 100%;
-	margin-right: auto;
-	margin-left: auto;
-	display: block;
-	width: auto;
 
+#form-wrapper {
+  width: 100%;
+  display: block;
 }
-label{
-	display: block;
+
+#form-wrapper .form-control-file {
+  width: 200px;
 }
-input, button{
-	color:white;
+
+#form-wrapper .post-control-btn {
+  width: 100%;
+}
+
+#title-field {
+  width: 100%;
+  border-color: darkgray;
+}
+
+#upload-button {
+  color: black;
+}
+
+.over-curtain-card {
+  background-color: white;
+  z-index: 5001;
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+  vertical-align: middle;
+  padding: 10px;
+  display: block;
+  text-align: left;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.primary-bg-clr {
+  background-color: #4fc3f7;
+}
+
+.secondary-bg-clr {
+  background-color: #aa00ff;
+}
+
+.secondary-bg-clr:hover {
+  background-color: #7200ca;
+  transition: 0.3s;
+}
+
+.secondary-bg-clr:active {
+  background-color: #7200ca;
+  transition: 0.3s;
+}
+
+.dangerous-bg-clr {
+  background-color: #f44336;
+}
+
+.dangerous-bg-clr:hover {
+  background-color: #d50000;
+  transition: 0.3s;
+}
+
+.dangerous-bg-clr:active {
+  background-color: #d50000;
+  transition: 0.3s;
+}
+
+.link-color {
+  color: #7200ca;
+}
+
+.link-color:hover {
+  color: #7200ca;
+  transition: 0.3s;
+}
+
+.post {
+  background-color: #fafafa;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+.navbar-brand {
+  font-size: 35px;
+  overflow: hidden;
+}
+
+.navbar-text {
+  opacity: 0.5;
+}
+
+.image-container {
+  width: 30%;
+  max-width: 150px;
+}
+
+.btn {
+  color: white;
+}
+
+img {
+  max-height: 300px;
+  max-width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  width: auto;
+}
+
+label {
+  display: block;
+}
+
+input, button {
+  color: white;
 }
